@@ -1,4 +1,4 @@
-/* COPYRIGHT (c) 2016 Nova Labs SRL
+/* COPYRIGHT (c) 2016-2017 Nova Labs SRL
  *
  * All rights reserved. All use of this software and documentation is
  * subject to the License Agreement located in the file LICENSE.
@@ -21,89 +21,91 @@ class DebugTransport;
 
 
 class DebugSubscriber:
-   public RemoteSubscriber
+    public RemoteSubscriber
 {
-   friend class DebugTransport;
+    friend class DebugTransport;
 
 private:
-   TimestampedMsgPtrQueue tmsgp_queue;
+    TimestampedMsgPtrQueue tmsgp_queue;
 
 private:
-   mutable BaseSubscriberQueue::Link by_transport_notify;
+    mutable BaseSubscriberQueue::Link by_transport_notify;
 
 public:
-   size_t
-   get_queue_length() const;
+    size_t
+    get_queue_length() const;
 
-   size_t
-   get_queue_count() const;
+    size_t
+    get_queue_count() const;
 
-   bool
-   fetch_unsafe(
-      Message*&       msgp,
-      core::os::Time& timestamp
-   );
+    bool
+    fetch_unsafe(
+        Message*&       msgp,
+        core::os::Time& timestamp
+    );
 
-   bool
-   notify_unsafe(
-      Message&              msg,
-      const core::os::Time& timestamp
-   );
+    bool
+    notify_unsafe(
+        Message&              msg,
+        const core::os::Time& timestamp
+    );
 
-   bool
-   fetch(
-      Message*&       msgp,
-      core::os::Time& timestamp
-   );
+    bool
+    fetch(
+        Message*&       msgp,
+        core::os::Time& timestamp
+    );
 
-   bool
-   notify(
-      Message&              msg,
-      const core::os::Time& timestamp,
-      bool                  mustReschedule = false
-   );
+    bool
+    notify(
+        Message&              msg,
+        const core::os::Time& timestamp,
+        bool                  mustReschedule = false
+    );
 
 
 public:
-   DebugSubscriber(
-      DebugTransport&               transport,
-      TimestampedMsgPtrQueue::Entry queue_buf[],
-      size_t                        queue_length
-   );
-   ~DebugSubscriber();
+    DebugSubscriber(
+        DebugTransport&               transport,
+        TimestampedMsgPtrQueue::Entry queue_buf[],
+        size_t                        queue_length
+    );
+    ~DebugSubscriber();
 };
 
 
 inline
 bool
 DebugSubscriber::notify(
-   Message&              msg,
-   const core::os::Time& timestamp,
-   bool                  mustReschedule
+    Message&              msg,
+    const core::os::Time& timestamp,
+    bool                  mustReschedule
 )
 {
-   core::os::SysLock::acquire();
-   bool success = notify_unsafe(msg, timestamp);
-   if(mustReschedule) {
-	   chSchRescheduleS(); // DAVIDE
-   }
-   core::os::SysLock::release();
+    core::os::SysLock::acquire();
+    bool success = notify_unsafe(msg, timestamp);
 
-   return success;
+    if (mustReschedule) {
+        chSchRescheduleS(); // DAVIDE
+    }
+
+    core::os::SysLock::release();
+
+    return success;
 }
 
 inline
 bool
 DebugSubscriber::fetch(
-   Message*&       msgp,
-   core::os::Time& timestamp
+    Message*&       msgp,
+    core::os::Time& timestamp
 )
 {
-   core::os::SysLock::acquire();
-   bool success = fetch_unsafe(msgp, timestamp);
-   core::os::SysLock::release();
+    core::os::SysLock::acquire();
+    bool success = fetch_unsafe(msgp, timestamp);
+    core::os::SysLock::release();
 
-   return success;
+    return success;
 }
 
 NAMESPACE_CORE_MW_END
