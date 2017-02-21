@@ -84,6 +84,9 @@ DebugSubscriber::notify(
 {
    core::os::SysLock::acquire();
    bool success = notify_unsafe(msg, timestamp);
+   if(mustReschedule) {
+	   chSchRescheduleS(); // DAVIDE
+   }
    core::os::SysLock::release();
 
    return success;
