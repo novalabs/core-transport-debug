@@ -59,9 +59,12 @@ private:
     };
 
     TimestampedMsgPtrQueue::Entry boot_msgqueue_buf[BOOT_BUFFER_LENGTH];
-    BootMsg         boot_msgbuf[BOOT_BUFFER_LENGTH];
+    TimestampedMsgPtrQueue::Entry bootmaster_msgqueue_buf[BOOT_BUFFER_LENGTH];
+    bootloader::BootMsg           boot_msgbuf[BOOT_BUFFER_LENGTH];
+    bootloader::BootMasterMsg     bootmaster_msgbuf[BOOT_BUFFER_LENGTH];
     DebugSubscriber boot_rsub;
     DebugPublisher  boot_rpub;
+    DebugSubscriber bootmaster_rsub;
 #endif
 
 public:

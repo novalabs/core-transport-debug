@@ -314,9 +314,11 @@ DebugTransport::initialize(
 
 #if CORE_IS_BOOTLOADER_BRIDGE
     // Register remote publisher and subscriber for the bootloader
-    success = advertise(boot_rpub, BOOTLOADER_TOPIC_NAME, core::os::Time::INFINITE, sizeof(BootMsg));
+    success = advertise(boot_rpub, BOOTLOADER_TOPIC_NAME, core::os::Time::INFINITE, sizeof(bootloader::BootMsg));
     CORE_ASSERT(success);
     success = subscribe(boot_rsub, BOOTLOADER_TOPIC_NAME, boot_msgbuf, BOOT_BUFFER_LENGTH);
+    CORE_ASSERT(success);
+    success = subscribe(bootmaster_rsub, BOOTLOADER_MASTER_TOPIC_NAME, bootmaster_msgbuf, BOOT_BUFFER_LENGTH);
     CORE_ASSERT(success);
 #endif
 
@@ -538,7 +540,8 @@ DebugTransport::DebugTransport(
 #if CORE_IS_BOOTLOADER_BRIDGE
     ,
     boot_rsub(*this, boot_msgqueue_buf, BOOT_BUFFER_LENGTH),
-    boot_rpub(*this)
+    boot_rpub(*this),
+    bootmaster_rsub(*this, bootmaster_msgqueue_buf, BOOT_BUFFER_LENGTH)
 #endif
 {
     CORE_ASSERT(channelp != NULL);
