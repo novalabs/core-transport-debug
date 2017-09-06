@@ -307,9 +307,9 @@ DebugTransport::initialize(
     send_lock.release();
 
     // Register remote publisher and subscriber for the management thread
-//   success = advertise(mgmt_rpub, MANAGEMENT_TOPIC_NAME, core::os::Time::INFINITE, sizeof(MgmtMsg));
+   success = advertise(mgmt_rpub, MANAGEMENT_TOPIC_NAME, core::os::Time::INFINITE, sizeof(MgmtMsg));
     CORE_ASSERT(success);
-//   success = subscribe(mgmt_rsub, MANAGEMENT_TOPIC_NAME, mgmt_msgbuf, MGMT_BUFFER_LENGTH);
+   success = subscribe(mgmt_rsub, MANAGEMENT_TOPIC_NAME, mgmt_msgbuf, MGMT_BUFFER_LENGTH);
     CORE_ASSERT(success);
 
 #if CORE_IS_BOOTLOADER_BRIDGE
@@ -322,7 +322,7 @@ DebugTransport::initialize(
     CORE_ASSERT(success);
 #endif
 
-    Middleware::instance.add(*this);
+    Middleware::instance().add(*this);
 } // DebugTransport::initialize
 
 bool
@@ -379,6 +379,7 @@ DebugTransport::spin_tx()
     return true;
 } // DebugTransport::spin_tx
 
+
 bool
 DebugTransport::spin_rx()
 {
@@ -431,7 +432,7 @@ DebugTransport::spin_rx()
     cs.add(namebufp, length);
 
     // Check if the topic is known
-    Topic* topicp = Middleware::instance.find_topic(namebufp);
+    Topic* topicp = Middleware::instance().find_topic(namebufp);
 
     if (topicp == NULL) {
         return false;
