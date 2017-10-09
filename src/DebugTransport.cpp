@@ -322,7 +322,7 @@ DebugTransport::initialize(
     CORE_ASSERT(success);
 #endif
 
-    Middleware::instance.add(*this);
+    Middleware::instance().add(*this);
 } // DebugTransport::initialize
 
 bool
@@ -431,7 +431,7 @@ DebugTransport::spin_rx()
     cs.add(namebufp, length);
 
     // Check if the topic is known
-    Topic* topicp = Middleware::instance.find_topic(namebufp);
+    Topic* topicp = Middleware::instance().find_topic(namebufp);
 
     if (topicp == NULL) {
         return false;
