@@ -32,16 +32,14 @@ DebugSubscriber::notify_unsafe(
 {
     TimestampedMsgPtrQueue::Entry entry(&msg, timestamp);
 
-    if (tmsgp_queue.post_unsafe(entry)) {
-        if (tmsgp_queue.get_count() == 1) {
+    bool success = tmsgp_queue.post_unsafe(entry);
+
+    if (tmsgp_queue.get_count() > 0) {
             static_cast<DebugTransport*>(get_transport())
               ->notify_first_sub_unsafe(*this);
         }
 
-        return true;
-    }
-
-    return false;
+    return success;
 }
 
 bool
